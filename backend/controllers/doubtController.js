@@ -24,11 +24,11 @@ const solveDoubt = async (req, res) => {
     // If an image was uploaded, extract text via OCR
     if (imageFile) {
       inputType = 'image';
-      imagePath = imageFile.filename;
+      imagePath = null;
 
       console.log(`📷 Processing uploaded image: ${imageFile.originalname}`);
       try {
-        ocrText = await extractTextFromImage(imageFile.path);
+        ocrText = await extractTextFromImage(imageFile.buffer);
 
         // Use OCR text if no text input was provided
         if (!finalQuestionText) {

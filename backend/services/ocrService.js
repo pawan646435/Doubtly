@@ -6,14 +6,15 @@ const path = require('path');
 
 /**
  * Extract text from an uploaded image using Tesseract.js OCR
- * @param {string} imagePath - Absolute path to the image file
+ * @param {Buffer|string} imageInput - Image buffer or absolute path
  * @returns {Promise<string>} - Extracted text from the image
  */
-const extractTextFromImage = async (imagePath) => {
+const extractTextFromImage = async (imageInput) => {
   let worker = null;
 
   try {
-    console.log(`🔍 Starting OCR on: ${path.basename(imagePath)}`);
+    const label = Buffer.isBuffer(imageInput) ? 'uploaded-buffer' : path.basename(imageInput);
+    console.log(`🔍 Starting OCR on: ${label}`);
 
     worker = await Tesseract.createWorker('eng', 1, {
       logger: (info) => {
@@ -33,7 +34,7 @@ const extractTextFromImage = async (imagePath) => {
 
     const {
       data: { text, confidence },
-    } = await worker.recognize(imagePath);
+    } = await worker.recognize(imageInput);
 
     const cleanedText = text
       .replace(/\n{3,}/g, '\n\n') // Remove excessive newlines

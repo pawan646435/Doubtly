@@ -115,6 +115,49 @@ The app will be available at: **http://localhost:5173**
 
 ---
 
+## ▲ Deploying To Vercel
+
+This repo is structured as a monorepo, so deploy it as **two Vercel projects**:
+
+1. **Backend project**
+   Root Directory: `backend`
+2. **Frontend project**
+   Root Directory: `frontend`
+
+### Backend project settings
+
+- Framework Preset: `Other`
+- Root Directory: `backend`
+- Required environment variables:
+  - `MONGODB_URI`
+  - `GEMINI_API_KEY`
+  - `KIMI_API_KEY`
+  - `CLIENT_URL` = your deployed frontend URL
+  - `DB_FALLBACK_MODE` = `disabled`
+
+After deploy, your API base URL will look like:
+
+```bash
+https://your-backend-project.vercel.app/api
+```
+
+### Frontend project settings
+
+- Framework Preset: `Vite`
+- Root Directory: `frontend`
+- Required environment variables:
+  - `VITE_API_BASE_URL` = `https://your-backend-project.vercel.app/api`
+
+The frontend includes a `vercel.json` rewrite so React Router routes such as `/history` work in production.
+
+### Important Vercel notes
+
+- Vercel Functions are **ephemeral**, so local file storage is not suitable for production history.
+- This app now expects **MongoDB** in production.
+- Image OCR uploads are handled in memory so they can run inside a serverless function.
+
+---
+
 ## 📁 Project Structure
 
 ```
