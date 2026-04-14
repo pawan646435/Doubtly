@@ -1,0 +1,41 @@
+/* /home/pawankumar/Desktop/Doubtly/frontend/src/components/ParticleBackground/ParticleBackground.css */
+/* Atmospheric background with floating orbs and grid */
+
+.particle-bg {
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: var(--z-background);
+}
+
+.particle-bg__orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(80px);
+  opacity: 0.12;
+  will-change: transform;
+}
+
+.particle-bg__orb--cyan {
+  background: radial-gradient(circle, var(--accent-cyan), transparent 70%);
+}
+
+.particle-bg__orb--violet {
+  background: radial-gradient(circle, var(--accent-violet), transparent 70%);
+}
+
+.particle-bg__orb--amber {
+  background: radial-gradient(circle, var(--accent-amber), transparent 70%);
+}
+
+.particle-bg__grid {
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.015) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.015) 1px, transparent 1px);
+  background-size: 60px 60px;
+  mask-image: radial-gradient(ellipse 80% 60% at 50% 30%, black 20%, transparent 80%);
+  -webkit-mask-image: radial-gradient(ellipse 80% 60% at 50% 30%, black 20%, transparent 80%);
+}

@@ -1,0 +1,6 @@
+# /home/pawankumar/Desktop/Doubtly/backend/.gitignore
+node_modules/
+.env
+uploads/
+data/
+*.log

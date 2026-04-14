@@ -1,0 +1,77 @@
+/* /home/pawankumar/Desktop/Doubtly/frontend/src/components/LoadingSpinner/LoadingSpinner.css */
+/* Orbital loading spinner */
+
+.loading-spinner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-xl);
+  padding: var(--space-3xl) 0;
+}
+
+.loading-spinner__orbitals {
+  position: relative;
+  width: 80px;
+  height: 80px;
+}
+
+.loading-spinner__ring {
+  position: absolute;
+  border: 2px solid transparent;
+  border-radius: 50%;
+}
+
+.loading-spinner__ring--outer {
+  inset: 0;
+  border-top-color: var(--accent-cyan);
+  border-right-color: rgba(0, 229, 255, 0.3);
+}
+
+.loading-spinner__ring--inner {
+  inset: 12px;
+  border-bottom-color: var(--accent-violet);
+  border-left-color: rgba(139, 92, 246, 0.3);
+}
+
+.loading-spinner__dot {
+  position: absolute;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  top: -3px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.loading-spinner__dot--cyan {
+  background: var(--accent-cyan);
+  box-shadow: 0 0 10px var(--accent-cyan);
+}
+
+.loading-spinner__dot--violet {
+  background: var(--accent-violet);
+  box-shadow: 0 0 10px var(--accent-violet);
+}
+
+.loading-spinner__center {
+  position: absolute;
+  inset: 28px;
+  border-radius: 50%;
+  background: var(--gradient-primary);
+  opacity: 0.3;
+}
+
+.loading-spinner__message {
+  font-family: var(--font-display);
+  font-size: var(--fs-md);
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+.loading-spinner__submessage {
+  font-family: var(--font-mono);
+  font-size: var(--fs-xs);
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: var(--ls-wider);
+}

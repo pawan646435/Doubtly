@@ -1,0 +1,180 @@
+/* /home/pawankumar/Desktop/Doubtly/frontend/src/components/ImageUpload/ImageUpload.css */
+/* Image upload dropzone — futuristic drag-and-drop */
+
+.image-upload {
+  width: 100%;
+}
+
+.image-upload__dropzone {
+  position: relative;
+  border: 2px dashed var(--border-default);
+  border-radius: var(--radius-lg);
+  padding: var(--space-2xl);
+  cursor: pointer;
+  transition: all var(--transition-base);
+  background: var(--bg-glass);
+  overflow: hidden;
+  min-height: 180px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.image-upload__dropzone::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: var(--gradient-glow);
+  opacity: 0;
+  transition: opacity var(--transition-base);
+}
+
+.image-upload__dropzone:hover::before {
+  opacity: 0.5;
+}
+
+.image-upload__dropzone:hover {
+  border-color: rgba(0, 229, 255, 0.3);
+  background: var(--bg-glass-hover);
+}
+
+.image-upload__dropzone--active {
+  border-color: var(--accent-cyan);
+  border-style: solid;
+  background: var(--accent-cyan-muted);
+  box-shadow: var(--shadow-glow-cyan);
+}
+
+.image-upload__dropzone--active::before {
+  opacity: 1;
+}
+
+.image-upload__dropzone--has-preview {
+  padding: 0;
+  border-style: solid;
+  border-color: var(--border-default);
+}
+
+.image-upload__dropzone--disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+/* ─── Placeholder ─────────────────────────── */
+.image-upload__placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-lg);
+  text-align: center;
+  position: relative;
+  z-index: 1;
+}
+
+.image-upload__icon-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 72px;
+  height: 72px;
+  border-radius: var(--radius-xl);
+  background: var(--accent-cyan-muted);
+  border: 1px solid rgba(0, 229, 255, 0.15);
+}
+
+.image-upload__icon {
+  color: var(--accent-cyan);
+  opacity: 0.7;
+}
+
+.image-upload__icon--active {
+  color: var(--accent-cyan);
+}
+
+.image-upload__title {
+  font-family: var(--font-display);
+  font-size: var(--fs-md);
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.image-upload__subtitle {
+  font-size: var(--fs-sm);
+  color: var(--text-muted);
+  margin-top: var(--space-xs);
+}
+
+/* ─── Preview ─────────────────────────────── */
+.image-upload__preview {
+  position: relative;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.image-upload__preview-img {
+  max-width: 100%;
+  max-height: 300px;
+  object-fit: contain;
+  border-radius: calc(var(--radius-lg) - 2px);
+  display: block;
+}
+
+.image-upload__preview-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-sm);
+  background: rgba(6, 6, 11, 0.7);
+  border-radius: calc(var(--radius-lg) - 2px);
+  opacity: 0;
+  transition: opacity var(--transition-fast);
+  color: var(--text-primary);
+  font-size: var(--fs-sm);
+}
+
+.image-upload__preview:hover .image-upload__preview-overlay {
+  opacity: 1;
+}
+
+.image-upload__remove {
+  position: absolute;
+  top: var(--space-sm);
+  right: var(--space-sm);
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-full);
+  background: rgba(244, 63, 94, 0.8);
+  border: none;
+  color: #fff;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all var(--transition-fast);
+  z-index: 2;
+}
+
+.image-upload__remove:hover {
+  background: var(--accent-rose);
+  transform: scale(1.1);
+}
+
+/* ─── Error ───────────────────────────────── */
+.image-upload__error {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  margin-top: var(--space-sm);
+  padding: var(--space-sm) var(--space-md);
+  border-radius: var(--radius-md);
+  background: var(--accent-rose-muted);
+  color: var(--accent-rose);
+  font-size: var(--fs-sm);
+  border: 1px solid rgba(244, 63, 94, 0.2);
+}

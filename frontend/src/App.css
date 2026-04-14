@@ -1,0 +1,16 @@
+/* /home/pawankumar/Desktop/Doubtly/frontend/src/App.css */
+/* Main application layout styles */
+
+.app {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+
+.app__main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding-top: 72px; /* Navbar height offset */
+}

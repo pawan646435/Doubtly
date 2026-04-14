@@ -1,0 +1,272 @@
+/* /home/pawankumar/Desktop/Doubtly/frontend/src/pages/SolverPage/SolverPage.css */
+/* Solver page — main doubt-solving interface */
+
+.solver-page {
+  min-height: calc(100vh - 72px);
+  padding-bottom: var(--space-4xl);
+}
+
+.solver-page__container {
+  max-width: 860px;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xl);
+  padding-top: var(--space-2xl);
+}
+
+/* ─── Header ──────────────────────────────── */
+.solver-page__header {
+  text-align: center;
+}
+
+.solver-page__title {
+  font-family: var(--font-display);
+  font-size: var(--fs-3xl);
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-md);
+  margin-bottom: var(--space-sm);
+}
+
+.solver-page__title-icon {
+  color: var(--accent-cyan);
+}
+
+.solver-page__subtitle {
+  font-size: var(--fs-md);
+  color: var(--text-muted);
+}
+
+.solver-page__format-hint {
+  max-width: 680px;
+  margin: var(--space-md) auto 0;
+  padding: var(--space-sm) var(--space-md);
+  border-radius: var(--radius-full);
+  border: 1px solid var(--border-subtle);
+  background: rgba(255, 255, 255, 0.03);
+  color: var(--text-secondary);
+  font-size: var(--fs-sm);
+  line-height: var(--lh-normal);
+}
+
+/* ─── Input Section ───────────────────────── */
+.solver-page__input-section {
+  padding: var(--space-xl);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-lg);
+}
+
+/* Mode Toggle */
+.solver-page__mode-toggle {
+  display: flex;
+  gap: var(--space-sm);
+  padding: 4px;
+  background: var(--bg-elevated);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-subtle);
+}
+
+.solver-page__mode-btn {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-sm);
+  padding: var(--space-sm) var(--space-md);
+  border-radius: var(--radius-sm);
+  border: none;
+  background: transparent;
+  color: var(--text-muted);
+  font-family: var(--font-display);
+  font-size: var(--fs-sm);
+  font-weight: 500;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.solver-page__mode-btn:hover {
+  color: var(--text-secondary);
+}
+
+.solver-page__mode-btn--active {
+  background: var(--bg-glass);
+  color: var(--accent-cyan);
+  box-shadow: var(--shadow-sm);
+}
+
+/* Textarea */
+.solver-page__textarea {
+  min-height: 140px;
+  font-size: var(--fs-md);
+  line-height: var(--lh-relaxed);
+}
+
+.solver-page__textarea--small {
+  min-height: 60px;
+  margin-top: var(--space-md);
+  font-size: var(--fs-sm);
+}
+
+/* ─── Options ─────────────────────────────── */
+.solver-page__options {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: var(--space-lg);
+  flex-wrap: wrap;
+}
+
+.solver-page__option-group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+.solver-page__option-label {
+  font-family: var(--font-mono);
+  font-size: var(--fs-xs);
+  font-weight: 500;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: var(--ls-wider);
+}
+
+/* Category Pills */
+.solver-page__category-pills {
+  display: flex;
+  gap: var(--space-xs);
+  flex-wrap: wrap;
+}
+
+.solver-page__category-pill {
+  padding: var(--space-xs) var(--space-md);
+  border-radius: var(--radius-full);
+  border: 1px solid var(--border-default);
+  background: transparent;
+  color: var(--text-muted);
+  font-family: var(--font-display);
+  font-size: var(--fs-xs);
+  font-weight: 500;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.solver-page__category-pill:hover {
+  border-color: var(--accent-cyan);
+  color: var(--text-primary);
+}
+
+.solver-page__category-pill--active {
+  background: var(--accent-cyan-muted);
+  border-color: rgba(0, 229, 255, 0.3);
+  color: var(--accent-cyan);
+}
+
+/* ELI5 Toggle */
+.solver-page__eli5-toggle {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: var(--space-sm) var(--space-md);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-default);
+  background: transparent;
+  color: var(--text-muted);
+  font-family: var(--font-display);
+  font-size: var(--fs-sm);
+  font-weight: 500;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.solver-page__eli5-toggle:hover {
+  border-color: var(--accent-amber);
+  color: var(--accent-amber);
+}
+
+.solver-page__eli5-toggle--active {
+  background: var(--accent-amber-muted);
+  border-color: rgba(245, 158, 11, 0.3);
+  color: var(--accent-amber);
+}
+
+/* ─── Solve Button ────────────────────────── */
+.solver-page__solve-btn {
+  width: 100%;
+  padding: var(--space-lg) var(--space-2xl);
+  font-size: var(--fs-md);
+}
+
+.solver-page__solve-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+/* ─── Error ───────────────────────────────── */
+.solver-page__error {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  padding: var(--space-md) var(--space-lg);
+  border-radius: var(--radius-md);
+  background: var(--accent-rose-muted);
+  border: 1px solid rgba(244, 63, 94, 0.2);
+  color: var(--accent-rose);
+  font-size: var(--fs-sm);
+}
+
+.solver-page__error span {
+  flex: 1;
+}
+
+.solver-page__error-close {
+  background: none;
+  border: none;
+  color: var(--accent-rose);
+  cursor: pointer;
+  padding: var(--space-xs);
+  border-radius: var(--radius-sm);
+  transition: background var(--transition-fast);
+}
+
+.solver-page__error-close:hover {
+  background: rgba(244, 63, 94, 0.2);
+}
+
+/* ─── Response Section ────────────────────── */
+.solver-page__response-section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xl);
+  padding-top: var(--space-xl);
+  border-top: 1px solid var(--border-subtle);
+}
+
+.solver-page__new-doubt-btn {
+  align-self: center;
+  margin-top: var(--space-md);
+}
+
+/* ─── Responsive ──────────────────────────── */
+@media (max-width: 768px) {
+  .solver-page__container {
+    padding-top: var(--space-lg);
+  }
+
+  .solver-page__title {
+    font-size: var(--fs-2xl);
+  }
+
+  .solver-page__options {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .solver-page__input-section {
+    padding: var(--space-lg);
+  }
+}
