@@ -58,6 +58,17 @@ const apiLimiter = rateLimit({
 app.use('/api/', apiLimiter);
 app.use('/api/doubts', doubtRoutes);
 
+app.get('/', (req, res) => {
+  res.send('✦ Doubtly API is running. Use /api/health for status.');
+});
+
+app.get('/api', (req, res) => {
+  res.json({
+    success: true,
+    message: 'Welcome to Doubtly API ✦',
+  });
+});
+
 app.get('/api/health', (req, res) => {
   res.json({
     success: true,
