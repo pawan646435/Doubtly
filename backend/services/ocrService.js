@@ -16,7 +16,13 @@ const extractTextFromImage = async (imageInput) => {
     const label = Buffer.isBuffer(imageInput) ? 'uploaded-buffer' : path.basename(imageInput);
     console.log(`🔍 Starting OCR on: ${label}`);
 
+    const langPath = path.join(__dirname, '..');
     worker = await Tesseract.createWorker('eng', 1, {
+      // Use /tmp as cache directory — the only writable path in serverless (Vercel)
+      cachePath: '/tmp',
+      workerPath: '/tmp',
+      // Use the local traineddata file bundled in the repo (avoids CDN download on Vercel)
+      langPath,
       logger: (info) => {
         if (info.status === 'recognizing text') {
           // Log progress at 25% intervals
