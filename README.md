@@ -43,7 +43,7 @@ Doubtly is a full-stack web application that allows students to:
 | **Node-Cache** | API response caching to reduce costs | |
 | **MongoDB + Mongoose** | Database & ODM |
 | **Tesseract.js** | OCR (text extraction from images) |
-| **Google Gemini + NVIDIA Kimi API** | AI model access + routing (Gemini 1.5 Flash, Kimi-k2-instruct) |
+| **Google Gemini + NVIDIA Kimi API** | AI model access + routing (Gemini 2.0 Flash, Kimi-k2-instruct) |
 | **Multer** | File upload handling |
 | **express-rate-limit** | API rate limiting |
 
@@ -84,9 +84,9 @@ npm install
 
 # Configure environment variables
 cp .env.example .env
-# Edit .env and add your MONGODB_URI + NVIDIA keys
-# - GEMINI_API_KEY (Google)
-# - KIMI_API_KEY (NVIDIA / openai SDK)
+# Edit .env and add your MONGODB_URI + API keys
+# - GEMINI_API_KEY (Google Gemini)
+# - KIMI_API_KEY (NVIDIA Kimi)
 # Optional: DB_FALLBACK_MODE=file to run without local MongoDB
 ```
 
@@ -176,7 +176,7 @@ Doubtly/
 │   │   └── upload.js          # Multer file upload
 │   ├── services/
 │   │   ├── ocrService.js      # Tesseract.js OCR
-│   │   └── aiService.js       # Dual-model routing (Gemma + Qwen)
+│   │   └── aiService.js       # Dual-model routing (Gemini + Kimi)
 │   ├── .env.example           # Environment template
 │   └── package.json
 │
@@ -250,8 +250,8 @@ All AI explanations and follow-ups are cached using `node-cache` (1-hour TTL). I
 ### Model Routing
 | Provider | Model | Best For | 
 |----------|-------|----------|
-| Gemma | `google/gemma-4-31b-it` | Fast, structured math/reasoning/general explanations |
-| Qwen | `qwen/qwen3.5-122b-a10b` | Coding-heavy tasks and detailed theory/comparison answers |
+| Gemini | `gemini-2.0-flash` | Fast, structured math/reasoning/science/general explanations |
+| Kimi | `moonshotai/kimi-k2-instruct` | Coding-heavy tasks and detailed theory/follow-up answers |
 
 The chosen model is stored with each saved doubt (`aiProvider`, `aiModel`) so follow-ups and practice questions continue using the same model that solved the original doubt.
 
@@ -297,20 +297,12 @@ The chosen model is stored with each saved doubt (`aiProvider`, `aiModel`) so fo
 |----------|-------------|----------|
 | `MONGODB_URI` | MongoDB connection string | Yes |
 | `DB_FALLBACK_MODE` | `file` uses local JSON storage when MongoDB is unavailable | No |
-| `NVIDIA_API_KEY` | Google Gemini + NVIDIA Kimi API key (Gemma) | Yes* |
-| `NVIDIA_QWEN_API_KEY` | Google Gemini + NVIDIA Kimi API key (Qwen) | No (recommended) |
-| `NVIDIA_API_URL` | NVIDIA chat completions endpoint | No |
-| `NVIDIA_MODEL` | NVIDIA-hosted model ID | No |
-| `NVIDIA_QWEN_MODEL` | NVIDIA-hosted Qwen model ID | No |
-| `NVIDIA_ENABLE_THINKING` | Enable Gemma thinking mode | No |
-| `NVIDIA_QWEN_ENABLE_THINKING` | Enable Qwen thinking mode | No |
-| `NVIDIA_EXPLANATION_TIMEOUT_MS` | Timeout for main solve request | No |
-| `NVIDIA_FOLLOWUP_TIMEOUT_MS` | Timeout for follow-up requests | No |
-| `NVIDIA_PRACTICE_TIMEOUT_MS` | Timeout for practice generation | No |
+| `GEMINI_API_KEY` | Google Gemini API key | Yes* |
+| `KIMI_API_KEY` | NVIDIA Kimi API key (via OpenAI SDK) | No (recommended) |
 | `PORT` | Backend server port (default: 5000) | No |
 | `CLIENT_URL` | Frontend URL for CORS (default: http://localhost:5173) | No |
 
-`*` At least one of `NVIDIA_API_KEY` or `NVIDIA_QWEN_API_KEY` must be set. For best routing, set both.
+`*` At least one of `GEMINI_API_KEY` or `KIMI_API_KEY` must be set. For best routing, set both.
 
 ---
 

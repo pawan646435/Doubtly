@@ -60,14 +60,13 @@ const doubtSchema = new mongoose.Schema(
       default: 'general',
     },
 
-    // Provider/model used for this doubt
     aiProvider: {
       type: String,
-      default: 'nvidia-gemma',
+      default: 'google-gemini',
     },
     aiModel: {
       type: String,
-      default: 'google/gemma-4-31b-it',
+      default: 'gemini-2.0-flash',
     },
 
     // AI-generated response with step-by-step explanation

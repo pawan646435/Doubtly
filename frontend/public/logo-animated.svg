@@ -1,8 +1,8 @@
-<svg width="260" height="90" viewBox="0 0 260 90" fill="none" xmlns="http://www.w3.org/2000/svg">
+<svg width="400" height="140" viewBox="0 0 400 140" fill="none" xmlns="http://www.w3.org/2000/svg">
 
   <defs>
     <!-- Gradient Animation -->
-    <linearGradient id="grad" x1="0" y1="0" x2="260" y2="90" gradientUnits="userSpaceOnUse">
+    <linearGradient id="grad" x1="0" y1="0" x2="400" y2="140" gradientUnits="userSpaceOnUse">
       <stop offset="0%" stop-color="#00e5ff">
         <animate attributeName="stop-color" values="#00e5ff;#8b5cf6;#00e5ff" dur="4s" repeatCount="indefinite"/>
       </stop>
@@ -12,7 +12,7 @@
     </linearGradient>
 
     <!-- Text Gradient -->
-    <linearGradient id="textGrad" x1="80" y1="30" x2="220" y2="60" gradientUnits="userSpaceOnUse">
+    <linearGradient id="textGrad" x1="120" y1="45" x2="340" y2="90" gradientUnits="userSpaceOnUse">
       <stop offset="0%" stop-color="#00e5ff">
         <animate attributeName="stop-color" values="#00e5ff;#8b5cf6;#00e5ff" dur="3s" repeatCount="indefinite"/>
       </stop>
@@ -33,31 +33,31 @@
 
   <!-- Floating Chat Bubble -->
   <g filter="url(#glow)">
-    <rect x="10" y="20" rx="15" width="55" height="40" fill="url(#grad)">
+    <rect x="20" y="35" rx="22" width="90" height="65" fill="url(#grad)">
       <animateTransform attributeName="transform" type="translate"
         values="0,0; 0,-4; 0,0" dur="3s" repeatCount="indefinite"/>
     </rect>
-    <polygon points="30,60 40,75 48,60" fill="url(#grad)"/>
+    <polygon points="50,95 70,120 86,95" fill="url(#grad)"/>
   </g>
 
   <!-- Pulsing Spark -->
-  <path d="M38 30 L41 36 L48 39 L41 42 L38 48 L35 42 L28 39 L35 36 Z"
-        fill="white">
+    <path d="M68 50 L74 62 L88 68 L74 74 L68 88 L62 74 L48 68 L62 62 Z"
+      fill="white">
     <animate attributeName="opacity" values="1;0.5;1" dur="1.5s" repeatCount="indefinite"/>
     <animateTransform attributeName="transform" type="scale"
       values="1;1.2;1" dur="1.5s" repeatCount="indefinite" additive="sum"/>
   </path>
 
   <!-- Text — uses gradient fill so it's visible on both dark and light backgrounds -->
-  <text x="80" y="52"
+  <text x="140" y="82"
         font-family="'Space Grotesk', Poppins, sans-serif"
-        font-size="30"
+        font-size="50"
         font-weight="600"
         fill="url(#textGrad)"
         opacity="0">
     Doubtly
     <animate attributeName="opacity" from="0" to="1" dur="1.5s" fill="freeze"/>
-    <animate attributeName="x" from="70" to="80" dur="1.5s" fill="freeze"/>
+    <animate attributeName="x" from="120" to="140" dur="1.5s" fill="freeze"/>
   </text>
 
 </svg>
