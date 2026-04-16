@@ -1,4 +1,4 @@
-// /home/pawankumar/Desktop/Doubtly/frontend/src/components/ParticleBackground/ParticleBackground.jsx
+// frontend/src/components/ParticleBackground/ParticleBackground.jsx
 // Animated particle/orb background for atmospheric depth
 
 import { useMemo } from 'react';

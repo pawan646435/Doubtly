@@ -1,3 +1,4 @@
+// backend/services/aiService.js
 // AI service using Google Gemini API & NVIDIA Kimi API
 
 const { GoogleGenerativeAI } = require('@google/generative-ai');
@@ -11,11 +12,18 @@ const apiCache = new NodeCache({ stdTTL: 3600, checkperiod: 600 });
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || '');
 const DEFAULT_MODEL = 'gemini-2.0-flash';
+const AI_REQUEST_TIMEOUT_MS = Number(process.env.AI_REQUEST_TIMEOUT_MS || 10000);
+const PROVIDER_BACKOFF_MS = Number(process.env.AI_PROVIDER_BACKOFF_MS || 5 * 60 * 1000);
 
 const kimiClient = new OpenAI({
   baseURL: 'https://integrate.api.nvidia.com/v1',
   apiKey: process.env.KIMI_API_KEY || ''
 });
+
+const providerBackoffUntil = {
+  gemini: 0,
+  kimi: 0,
+};
 
 // ================= CONSTANTS =================
 
@@ -79,6 +87,103 @@ const buildSystemPrompt = (questionType = 'general', eli5Mode = false) => {
   return base + `\nExplain like I'm 5 using simple language and examples.`;
 };
 
+const withTimeout = async (promise, ms, label) => {
+  let timer;
+  try {
+    return await Promise.race([
+      promise,
+      new Promise((_, reject) => {
+        timer = setTimeout(() => reject(new Error(`${label} timed out after ${ms}ms`)), ms);
+      }),
+    ]);
+  } finally {
+    clearTimeout(timer);
+  }
+};
+
+const isProviderInBackoff = (provider) => Date.now() < (providerBackoffUntil[provider] || 0);
+
+const shouldBackoffProvider = (errorMessage = '') => {
+  const msg = String(errorMessage).toLowerCase();
+  return (
+    msg.includes('429') ||
+    msg.includes('quota') ||
+    msg.includes('too many requests') ||
+    msg.includes('rate limit') ||
+    msg.includes('resource exhausted') ||
+    msg.includes('insufficient_quota')
+  );
+};
+
+const markProviderBackoff = (provider, errorMessage) => {
+  if (!shouldBackoffProvider(errorMessage)) return;
+  providerBackoffUntil[provider] = Date.now() + PROVIDER_BACKOFF_MS;
+  console.warn(`⚠ ${provider} is rate-limited; backing off for ${Math.round(PROVIDER_BACKOFF_MS / 1000)}s`);
+};
+
+const callGemini = async ({ prompt, questionType, eli5Mode }) => {
+  if (!process.env.GEMINI_API_KEY) {
+    throw new Error('Gemini key unavailable');
+  }
+  if (isProviderInBackoff('gemini')) {
+    throw new Error('Gemini is temporarily in backoff');
+  }
+
+  try {
+    const model = genAI.getGenerativeModel({
+      model: DEFAULT_MODEL,
+      systemInstruction: buildSystemPrompt(questionType, eli5Mode),
+    });
+
+    const result = await withTimeout(
+      model.generateContent(prompt),
+      AI_REQUEST_TIMEOUT_MS,
+      'Gemini request'
+    );
+
+    return {
+      response: result.response.text(),
+      aiProvider: 'google-gemini',
+      aiModel: DEFAULT_MODEL,
+    };
+  } catch (error) {
+    markProviderBackoff('gemini', error?.message);
+    throw error;
+  }
+};
+
+const callKimi = async ({ prompt, questionType, eli5Mode }) => {
+  if (!process.env.KIMI_API_KEY) {
+    throw new Error('Kimi key unavailable');
+  }
+  if (isProviderInBackoff('kimi')) {
+    throw new Error('Kimi is temporarily in backoff');
+  }
+
+  try {
+    const completion = await withTimeout(
+      kimiClient.chat.completions.create({
+        model: 'moonshotai/kimi-k2-instruct',
+        messages: [
+          { role: 'system', content: buildSystemPrompt(questionType, eli5Mode) },
+          { role: 'user', content: prompt },
+        ],
+      }),
+      AI_REQUEST_TIMEOUT_MS,
+      'Kimi request'
+    );
+
+    return {
+      response: completion.choices[0]?.message?.content,
+      aiProvider: 'nvidia-kimi',
+      aiModel: 'moonshotai/kimi-k2-instruct',
+    };
+  } catch (error) {
+    markProviderBackoff('kimi', error?.message);
+    throw error;
+  }
+};
+
 // ================= CORE =================
 
 const generateExplanation = async (questionText, eli5Mode = false, category = 'general') => {
@@ -86,85 +191,51 @@ const generateExplanation = async (questionText, eli5Mode = false, category = 'g
     const questionType =
       category === 'coding' ? 'coding' : detectQuestionType(questionText, category);
 
+    const normalizedQuestion = (questionText || '')
+      .trim()
+      .replace(/\s+/g, ' ')
+      .toLowerCase();
+
     // Create a cache key using the parameters
-    const cacheKey = `explanation_${Buffer.from(questionText).toString('base64').substring(0, 50)}_${eli5Mode}_${questionType}`;
+    const cacheKey = `explanation_${Buffer.from(normalizedQuestion).toString('base64').substring(0, 50)}_${eli5Mode}_${questionType}`;
     const cachedResult = apiCache.get(cacheKey);
     if (cachedResult) {
       console.log('✅ Returning cached explanation');
       return cachedResult;
     }
 
-    // ===== CODING → KIMI =====
-    if (questionType === 'coding') {
-      if (!process.env.KIMI_API_KEY) {
-        throw new Error('Kimi API key missing');
-      }
+    // Keep coding on Kimi-first. For others, skip Gemini-first when Gemini is in backoff.
+    const providerOrder =
+      questionType === 'coding'
+        ? ['kimi', 'gemini']
+        : isProviderInBackoff('gemini')
+          ? ['kimi', 'gemini']
+          : ['gemini', 'kimi'];
 
-      const completion = await kimiClient.chat.completions.create({
-        model: 'moonshotai/kimi-k2-instruct',
-        messages: [
-          { role: 'system', content: buildSystemPrompt('coding', eli5Mode) },
-          { role: 'user', content: questionText },
-        ],
-      });
-
-      const response = completion.choices[0]?.message?.content;
-
-      const resultObj = {
-        response,
-        keyConcepts: extractKeyConcepts(response),
-        finalAnswer: extractFinalAnswer(response),
-        questionType: 'coding',
-        aiProvider: 'nvidia-kimi',
-        aiModel: 'moonshotai/kimi-k2-instruct',
-      };
-      apiCache.set(cacheKey, resultObj);
-      return resultObj;
-    }
-
-    // ===== OTHER → GEMINI (with Kimi fallback) =====
     let response;
     let aiProvider;
     let aiModel;
+    const errors = [];
 
-    // Try Gemini first
-    if (process.env.GEMINI_API_KEY) {
+    for (const provider of providerOrder) {
       try {
-        const model = genAI.getGenerativeModel({
-          model: DEFAULT_MODEL,
-          systemInstruction: buildSystemPrompt(questionType, eli5Mode),
-        });
+        const result =
+          provider === 'gemini'
+            ? await callGemini({ prompt: questionText, questionType, eli5Mode })
+            : await callKimi({ prompt: questionText, questionType, eli5Mode });
 
-        const result = await model.generateContent(questionText);
-        response = result.response.text();
-        aiProvider = 'google-gemini';
-        aiModel = DEFAULT_MODEL;
-      } catch (geminiError) {
-        console.warn(`⚠ Gemini failed, trying Kimi fallback: ${geminiError.message}`);
-      }
-    }
-
-    // Fallback to Kimi if Gemini failed or unavailable
-    if (!response && process.env.KIMI_API_KEY) {
-      try {
-        const completion = await kimiClient.chat.completions.create({
-          model: 'moonshotai/kimi-k2-instruct',
-          messages: [
-            { role: 'system', content: buildSystemPrompt(questionType, eli5Mode) },
-            { role: 'user', content: questionText },
-          ],
-        });
-
-        response = completion.choices[0]?.message?.content;
-        aiProvider = 'nvidia-kimi';
-        aiModel = 'moonshotai/kimi-k2-instruct';
-      } catch (kimiError) {
-        throw new Error(`All AI providers failed. Gemini and Kimi both unavailable.`);
+        response = result.response;
+        aiProvider = result.aiProvider;
+        aiModel = result.aiModel;
+        break;
+      } catch (providerError) {
+        errors.push(`${provider}: ${providerError.message}`);
+        console.warn(`⚠ ${provider} failed: ${providerError.message}`);
       }
     }
 
     if (!response) {
-      throw new Error('No AI provider available. Please check your API keys.');
+      throw new Error(`All AI providers failed. ${errors.join(' | ')}`);
     }
 
     const resultObj = {

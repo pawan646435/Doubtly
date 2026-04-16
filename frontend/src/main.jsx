@@ -1,4 +1,4 @@
-// /home/pawankumar/Desktop/Doubtly/frontend/src/main.jsx
+// frontend/src/main.jsx
 // Application entry point — mounts React app with Router
 
 import { StrictMode } from 'react';

@@ -1,4 +1,4 @@
-// /home/pawankumar/Desktop/Doubtly/backend/services/ocrService.js
+// backend/services/ocrService.js
 // OCR service using Tesseract.js for extracting text from images
 
 const Tesseract = require('tesseract.js');
@@ -20,7 +20,8 @@ const extractTextFromImage = async (imageInput) => {
     worker = await Tesseract.createWorker('eng', 1, {
       // Use /tmp as cache directory — the only writable path in serverless (Vercel)
       cachePath: '/tmp',
-      workerPath: '/tmp',
+      // Local `eng.traineddata` is uncompressed, so disable `.gz` expectation.
+      gzip: false,
       // Use the local traineddata file bundled in the repo (avoids CDN download on Vercel)
       langPath,
       logger: (info) => {

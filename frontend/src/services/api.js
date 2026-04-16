@@ -1,4 +1,4 @@
-// /home/pawankumar/Desktop/Doubtly/frontend/src/services/api.js
+// frontend/src/services/api.js
 // API service for communicating with the Doubtly backend
 
 import axios from 'axios';

@@ -1,4 +1,4 @@
-// /home/pawankumar/Desktop/Doubtly/frontend/src/components/FollowUpChat/FollowUpChat.jsx
+// frontend/src/components/FollowUpChat/FollowUpChat.jsx
 // Follow-up conversation chat component
 
 import { useState, useRef, useEffect, Fragment } from 'react';

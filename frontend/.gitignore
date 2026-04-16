@@ -1,4 +1,16 @@
-# /home/pawankumar/Desktop/Doubtly/frontend/.gitignore
+# frontend/.gitignore
 node_modules/
 dist/
 *.log
+
+# Environment files
+.env
+.env.*
+!.env.example
+!.env.*.example
+
+# Potential secret files
+*service-account*.json
+*serviceAccount*.json
+*.pem
+*.key

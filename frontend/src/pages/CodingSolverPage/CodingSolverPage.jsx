@@ -1,7 +1,7 @@
-// /home/pawankumar/Desktop/Doubtly/frontend/src/pages/CodingSolverPage/CodingSolverPage.jsx
+// frontend/src/pages/CodingSolverPage/CodingSolverPage.jsx
 // Coding doubt solver — supports text and image input, uses Kimi backend
 
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Image as ImageIcon, Upload, X, Code2 } from 'lucide-react';
 import ParticleBackground from '../../components/ParticleBackground/ParticleBackground';
@@ -20,6 +20,11 @@ const CodingSolverPage = () => {
 
   const textareaRef = useRef(null);
   const fileInputRef = useRef(null);
+
+  // Clear any existing active doubt from other pages when entering
+  useEffect(() => {
+    clearCurrent();
+  }, [clearCurrent]);
 
   const adjustTextareaHeight = (e) => {
     const el = e.target;

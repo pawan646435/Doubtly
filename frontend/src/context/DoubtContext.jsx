@@ -1,4 +1,4 @@
-// /home/pawankumar/Desktop/Doubtly/frontend/src/context/DoubtContext.jsx
+// frontend/src/context/DoubtContext.jsx
 // Global state management for the Doubtly application
 
 import { createContext, useContext, useReducer, useCallback } from 'react';
@@ -29,6 +29,7 @@ const ACTIONS = {
   SET_ERROR: 'SET_ERROR',
   CLEAR_ERROR: 'CLEAR_ERROR',
   CLEAR_CURRENT: 'CLEAR_CURRENT',
+  CLEAR_HISTORY: 'CLEAR_HISTORY',
   SET_FOLLOW_UP_LOADING: 'SET_FOLLOW_UP_LOADING',
 };
 
@@ -89,6 +90,8 @@ const doubtReducer = (state, action) => {
       return { ...state, error: null };
     case ACTIONS.CLEAR_CURRENT:
       return { ...state, currentDoubt: null, error: null };
+    case ACTIONS.CLEAR_HISTORY:
+      return { ...state, history: [], pagination: null, currentDoubt: null };
     case ACTIONS.SET_FOLLOW_UP_LOADING:
       return { ...state, followUpLoading: action.payload };
     default:
@@ -188,6 +191,11 @@ export const DoubtProvider = ({ children }) => {
     dispatch({ type: ACTIONS.CLEAR_CURRENT });
   }, []);
 
+  // Clear history when user logs out
+  const clearHistory = useCallback(() => {
+    dispatch({ type: ACTIONS.CLEAR_HISTORY });
+  }, []);
+
   // Clear error
   const clearError = useCallback(() => {
     dispatch({ type: ACTIONS.CLEAR_ERROR });
@@ -201,6 +209,7 @@ export const DoubtProvider = ({ children }) => {
     askFollowUp,
     removeDoubt,
     clearCurrent,
+    clearHistory,
     clearError,
   };
 

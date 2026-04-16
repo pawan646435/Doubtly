@@ -1,3 +1,4 @@
+<!-- README.md -->
 # /home/pawankumar/Desktop/Doubtly/README.md
 
 <div align="center">
@@ -8,7 +9,7 @@
 
 ![Node.js](https://img.shields.io/badge/Node.js-22.x-339933?logo=nodedotjs&logoColor=white)
 ![React](https://img.shields.io/badge/React-18.x-61DAFB?logo=react&logoColor=black)
-![MongoDB](https://img.shields.io/badge/MongoDB-8.x-47A248?logo=mongodb&logoColor=white)
+![Firebase](https://img.shields.io/badge/Firebase-Firestore-FFCA28?logo=firebase&logoColor=black)
 ![NVIDIA](https://img.shields.io/badge/Google-Gemini_%2B_Kimi-4285F4)
 
 </div>
@@ -41,7 +42,7 @@ Doubtly is a full-stack web application that allows students to:
 | **Node.js + Express** | REST API server
 | **Node-Cache** | API response caching to reduce costs |
 | **Node-Cache** | API response caching to reduce costs | |
-| **MongoDB + Mongoose** | Database & ODM |
+| **Firebase Firestore (Admin SDK)** | Database |
 | **Tesseract.js** | OCR (text extraction from images) |
 | **Google Gemini + NVIDIA Kimi API** | AI model access + routing (Gemini 2.0 Flash, Kimi-k2-instruct) |
 | **Multer** | File upload handling |
@@ -66,7 +67,7 @@ Doubtly is a full-stack web application that allows students to:
 
 ### Prerequisites
 - **Node.js** >= 18.x
-- **MongoDB** running locally or a MongoDB Atlas connection string
+- **Firebase project** with Firestore enabled and a service account key
 - **Google Gemini + NVIDIA Kimi API Keys** (from [build.nvidia.com](https://build.nvidia.com))
   - `NVIDIA_API_KEY` for Gemma
   - `NVIDIA_QWEN_API_KEY` for Qwen (recommended for best routing)
@@ -84,10 +85,10 @@ npm install
 
 # Configure environment variables
 cp .env.example .env
-# Edit .env and add your MONGODB_URI + API keys
+# Edit .env and add your Firebase credentials + API keys
 # - GEMINI_API_KEY (Google Gemini)
 # - KIMI_API_KEY (NVIDIA Kimi)
-# Optional: DB_FALLBACK_MODE=file to run without local MongoDB
+# - FIREBASE_SERVICE_ACCOUNT_JSON (or split FIREBASE_* variables)
 ```
 
 ### 3. Frontend Setup
@@ -129,11 +130,10 @@ This repo is structured as a monorepo, so deploy it as **two Vercel projects**:
 - Framework Preset: `Other`
 - Root Directory: `backend`
 - Required environment variables:
-  - `MONGODB_URI`
+  - `FIREBASE_SERVICE_ACCOUNT_JSON` (or split `FIREBASE_PROJECT_ID`, `FIREBASE_CLIENT_EMAIL`, `FIREBASE_PRIVATE_KEY`)
   - `GEMINI_API_KEY`
   - `KIMI_API_KEY`
   - `CLIENT_URL` = your deployed frontend URL
-  - `DB_FALLBACK_MODE` = `disabled`
 
 After deploy, your API base URL will look like:
 
@@ -153,7 +153,7 @@ The frontend includes a `vercel.json` rewrite so React Router routes such as `/h
 ### Important Vercel notes
 
 - Vercel Functions are **ephemeral**, so local file storage is not suitable for production history.
-- This app now expects **MongoDB** in production.
+- This app now expects **Firebase Firestore** in production.
 - Image OCR uploads are handled in memory so they can run inside a serverless function.
 
 ---
@@ -165,9 +165,7 @@ Doubtly/
 ├── backend/
 │   ├── server.js              # Express app entry point
 │   ├── config/
-│   │   └── db.js              # MongoDB connection
-│   ├── models/
-│   │   └── Doubt.js           # Mongoose schema
+│   │   └── db.js              # Firebase Admin / Firestore initialization
 │   ├── routes/
 │   │   └── doubts.js          # API routes
 │   ├── controllers/
@@ -295,13 +293,16 @@ The chosen model is stored with each saved doubt (`aiProvider`, `aiModel`) so fo
 
 | Variable | Description | Required |
 |----------|-------------|----------|
-| `MONGODB_URI` | MongoDB connection string | Yes |
-| `DB_FALLBACK_MODE` | `file` uses local JSON storage when MongoDB is unavailable | No |
+| `FIREBASE_SERVICE_ACCOUNT_JSON` | Full Firebase service account JSON (stringified) | Yes* |
+| `FIREBASE_PROJECT_ID` | Firebase project id (when using split vars) | Yes* |
+| `FIREBASE_CLIENT_EMAIL` | Service account client email (split vars mode) | Yes* |
+| `FIREBASE_PRIVATE_KEY` | Service account private key with escaped newlines | Yes* |
 | `GEMINI_API_KEY` | Google Gemini API key | Yes* |
 | `KIMI_API_KEY` | NVIDIA Kimi API key (via OpenAI SDK) | No (recommended) |
 | `PORT` | Backend server port (default: 5000) | No |
 | `CLIENT_URL` | Frontend URL for CORS (default: http://localhost:5173) | No |
 
+`*` Provide either `FIREBASE_SERVICE_ACCOUNT_JSON` or the split `FIREBASE_*` credentials.
 `*` At least one of `GEMINI_API_KEY` or `KIMI_API_KEY` must be set. For best routing, set both.
 
 ---

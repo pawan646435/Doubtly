@@ -1,4 +1,4 @@
-// /home/pawankumar/Desktop/Doubtly/frontend/src/components/LoadingSpinner/LoadingSpinner.jsx
+// frontend/src/components/LoadingSpinner/LoadingSpinner.jsx
 // Premium loading spinner with orbital animation
 
 import { motion } from 'framer-motion';

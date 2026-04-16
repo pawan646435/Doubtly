@@ -1,3 +1,4 @@
+// backend/config/dbState.js
 let dbMode = 'disconnected';
 
 const setDbMode = (mode) => {
@@ -6,13 +7,10 @@ const setDbMode = (mode) => {
 
 const getDbMode = () => dbMode;
 
-const isMongoMode = () => dbMode === 'mongo';
-
-const isFileMode = () => dbMode === 'file';
+const isFirebaseMode = () => dbMode === 'firebase';
 
 module.exports = {
   setDbMode,
   getDbMode,
-  isMongoMode,
-  isFileMode,
+  isFirebaseMode,
 };

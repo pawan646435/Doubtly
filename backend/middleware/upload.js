@@ -1,4 +1,4 @@
-// /home/pawankumar/Desktop/Doubtly/backend/middleware/upload.js
+// backend/middleware/upload.js
 // Multer configuration for handling image uploads
 
 const multer = require('multer');

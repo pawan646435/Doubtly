@@ -1,4 +1,4 @@
-// /home/pawankumar/Desktop/Doubtly/frontend/src/pages/HomePage/HomePage.jsx
+// frontend/src/pages/HomePage/HomePage.jsx
 // Landing page with hero section, feature cards, and CTA
 
 import { Link } from 'react-router-dom';
@@ -125,10 +125,6 @@ const HomePage = () => {
               <Zap size={18} />
               Start Solving
               <ArrowRight size={16} />
-            </Link>
-            <Link to="/history" className="btn btn-secondary hero__cta-secondary" id="hero-history-btn">
-              <BookOpen size={18} />
-              View History
             </Link>
           </motion.div>
 

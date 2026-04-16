@@ -1,4 +1,4 @@
-// /home/pawankumar/Desktop/Doubtly/frontend/src/components/ImageUpload/ImageUpload.jsx
+// frontend/src/components/ImageUpload/ImageUpload.jsx
 // Drag-and-drop image upload component with preview
 
 import { useCallback, useState } from 'react';

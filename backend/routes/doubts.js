@@ -1,4 +1,4 @@
-// /home/pawankumar/Desktop/Doubtly/backend/routes/doubts.js
+// backend/routes/doubts.js
 // Express routes for doubt-related API endpoints
 
 const express = require('express');

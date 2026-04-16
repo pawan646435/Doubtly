@@ -1,4 +1,4 @@
-// /home/pawankumar/Desktop/Doubtly/frontend/src/components/ResponseArea/ResponseArea.jsx
+// frontend/src/components/ResponseArea/ResponseArea.jsx
 // AI response display component with markdown rendering and animated sections
 
 import { useState } from 'react';

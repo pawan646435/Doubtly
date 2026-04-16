@@ -1,8 +1,10 @@
-// /home/pawankumar/Desktop/Doubtly/frontend/src/pages/HistoryPage/HistoryPage.jsx
+// frontend/src/pages/HistoryPage/HistoryPage.jsx
 // History page — browse and manage past doubts
 
 import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useNavigate } from 'react-router-dom';
+import { onAuthStateChanged } from 'firebase/auth';
 import {
   Clock,
   Search,
@@ -18,6 +20,7 @@ import {
   AlertTriangle,
   CheckCircle,
 } from 'lucide-react';
+import { auth } from '../../firebase';
 import { useDoubt } from '../../context/DoubtContext';
 import ParticleBackground from '../../components/ParticleBackground/ParticleBackground';
 import ResponseArea from '../../components/ResponseArea/ResponseArea';
@@ -43,18 +46,39 @@ const HistoryPage = () => {
     fetchHistory,
     loadDoubt,
     removeDoubt,
+    clearHistory,
     clearCurrent,
   } = useDoubt();
+  const navigate = useNavigate();
 
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [deleteConfirm, setDeleteConfirm] = useState(null);
+  const [authReady, setAuthReady] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   const getDoubtId = (doubt) => doubt?._id || doubt?.id || null;
 
   useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      const loggedIn = Boolean(user);
+      setIsLoggedIn(loggedIn);
+      setAuthReady(true);
+
+      if (!loggedIn) {
+        clearHistory();
+        clearCurrent();
+        navigate('/');
+      }
+    });
+
+    return () => unsubscribe();
+  }, [clearCurrent, clearHistory, navigate]);
+
+  useEffect(() => {
+    if (!authReady || !isLoggedIn) return;
     fetchHistory({ category: selectedCategory });
-  }, [selectedCategory, fetchHistory]);
+  }, [authReady, isLoggedIn, selectedCategory, fetchHistory]);
 
   const handleCategoryChange = (cat) => {
     setSelectedCategory(cat);
@@ -98,6 +122,14 @@ const HistoryPage = () => {
     if (diffDays < 7) return `${diffDays}d ago`;
     return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
   };
+
+  if (!authReady) {
+    return (
+      <div className="history-page">
+        <ParticleBackground />
+      </div>
+    );
+  }
 
   return (
     <div className="history-page">

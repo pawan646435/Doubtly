@@ -1,3 +1,4 @@
+/* frontend/src/components/Navbar/Navbar.css */
 /* /home/pawankumar/Desktop/Doubtly/frontend/src/components/Navbar/Navbar.css */
 /* Navbar — Glassy floating navigation */
 
@@ -36,7 +37,7 @@
 }
 
 .navbar__logo-svg {
-  height: 36px;
+  height: 48px;
   width: auto;
   display: block;
 }
@@ -140,6 +141,10 @@
 
 /* ─── Responsive ──────────────────────────── */
 @media (max-width: 768px) {
+  .navbar__logo-svg {
+    height: 42px;
+  }
+
   .navbar__links,
   .navbar__cta {
     display: none;

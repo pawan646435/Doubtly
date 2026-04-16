@@ -1,4 +1,4 @@
-// /home/pawankumar/Desktop/Doubtly/frontend/vite.config.js
+// frontend/vite.config.js
 // Vite configuration for Doubtly frontend
 
 import { defineConfig } from 'vite';

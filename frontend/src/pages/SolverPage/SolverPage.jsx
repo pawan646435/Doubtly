@@ -1,4 +1,4 @@
-// /home/pawankumar/Desktop/Doubtly/frontend/src/pages/SolverPage/SolverPage.jsx
+// frontend/src/pages/SolverPage/SolverPage.jsx
 // Main doubt solver page — input, solve, and display results
 
 import { useState, useRef, useEffect } from 'react';
@@ -33,6 +33,11 @@ const categories = [
 
 const SolverPage = () => {
   const { solveDoubt, currentDoubt, solving, error, clearError, clearCurrent } = useDoubt();
+
+  // Clear any existing active doubt from other pages when entering
+  useEffect(() => {
+    clearCurrent();
+  }, [clearCurrent]);
 
   const [questionText, setQuestionText] = useState('');
   const [selectedImage, setSelectedImage] = useState(null);

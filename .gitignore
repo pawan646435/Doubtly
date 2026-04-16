@@ -1,3 +1,43 @@
+# .gitignore
 .history/
 .codex
 .sfdx/
+
+# OS/editor artifacts
+.DS_Store
+Thumbs.db
+
+# Dependency/build artifacts
+**/node_modules/
+**/dist/
+**/.cache/
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Environment files (keep examples only)
+**/.env
+**/.env.*
+!**/.env.example
+!**/.env.*.example
+
+# Runtime/local data
+**/uploads/
+**/data/
+*.sqlite
+*.db
+
+# Secret and credential files
+**/*service-account*.json
+**/*serviceAccount*.json
+**/*firebase*adminsdk*.json
+**/secrets/
+**/.secrets/
+*.pem
+*.key
+*.p12
+*.pfx

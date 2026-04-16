@@ -1,4 +1,4 @@
-// /home/pawankumar/Desktop/Doubtly/backend/controllers/doubtController.js
+// backend/controllers/doubtController.js
 // Controller for handling doubt-related HTTP requests
 
 const { extractTextFromImage } = require('../services/ocrService');

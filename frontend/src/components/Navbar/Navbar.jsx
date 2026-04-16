@@ -1,16 +1,46 @@
-// /home/pawankumar/Desktop/Doubtly/frontend/src/components/Navbar/Navbar.jsx
+// frontend/src/components/Navbar/Navbar.jsx
 // Navigation bar component with glassy design and animated logo
 
 import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Sparkles, Clock, Zap, Menu, X, Code } from 'lucide-react';
+import { Sparkles, Clock, Zap, Menu, X, Code, LogIn, LogOut } from 'lucide-react';
+import { auth, googleProvider, signInWithPopup, signOut } from '../../firebase';
+import { onAuthStateChanged } from 'firebase/auth';
+import { useDoubt } from '../../context/DoubtContext';
 import './Navbar.css';
 
 const Navbar = () => {
   const location = useLocation();
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [user, setUser] = useState(null);
+  const { clearHistory, clearCurrent } = useDoubt();
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+      setUser(currentUser);
+    });
+    return () => unsubscribe();
+  }, []);
+
+  const handleLogin = async () => {
+    try {
+      await signInWithPopup(auth, googleProvider);
+    } catch (error) {
+      console.error('Google sign-in error', error);
+    }
+  };
+
+  const handleLogout = async () => {
+    try {
+      await signOut(auth);
+      clearHistory();
+      clearCurrent();
+    } catch (error) {
+      console.error('Logout error', error);
+    }
+  };
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 20);
@@ -27,7 +57,7 @@ const Navbar = () => {
     { path: '/', label: 'Home', icon: Sparkles },
     { path: '/solve', label: 'Solve', icon: Zap },
     { path: '/coding', label: 'Coding', icon: Code },
-    { path: '/history', label: 'History', icon: Clock },
+    ...(user ? [{ path: '/history', label: 'History', icon: Clock }] : []),
   ];
 
   return (
@@ -69,11 +99,21 @@ const Navbar = () => {
           ))}
         </div>
 
-        {/* CTA Button */}
-        <Link to="/solve" className="navbar__cta btn btn-primary" id="navbar-solve-btn">
-          <Zap size={16} />
-          Solve Now
-        </Link>
+        {/* Actions Container */}
+        <div className="navbar__actions" style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginLeft: 'auto' }}>
+          {/* Auth Button */}
+          {user ? (
+            <Link to="/dashboard" className="navbar__cta btn btn-primary" id="navbar-solve-btn" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+              <img src={user.photoURL} alt={user.displayName} style={{ width: '22px', height: '22px', borderRadius: '50%', objectFit: 'cover' }} />
+              Account
+            </Link>
+          ) : (
+            <button onClick={handleLogin} className="navbar__cta btn btn-primary" id="navbar-login-btn">
+              <LogIn size={16} />
+              Login
+            </button>
+          )}
+        </div>
 
         {/* Mobile Menu Toggle */}
         <button
@@ -108,10 +148,21 @@ const Navbar = () => {
                 <span>{label}</span>
               </Link>
             ))}
-            <Link to="/solve" className="navbar__mobile-cta btn btn-primary">
-              <Zap size={16} />
-              Solve Now
-            </Link>
+
+            {user ? (
+              <Link to="/dashboard" className="navbar__mobile-cta btn btn-primary" onClick={() => setMobileOpen(false)}>
+                <img src={user.photoURL} alt={user.displayName} style={{ width: '20px', height: '20px', borderRadius: '50%', objectFit: 'cover' }} />
+                Account
+              </Link>
+            ) : (
+              <button
+                className="navbar__mobile-cta btn btn-primary"
+                onClick={() => { handleLogin(); setMobileOpen(false); }}
+              >
+                <LogIn size={18} />
+                Login
+              </button>
+            )}
           </motion.div>
         )}
       </AnimatePresence>

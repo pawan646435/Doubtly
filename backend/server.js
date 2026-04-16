@@ -1,4 +1,4 @@
-// /home/pawankumar/Desktop/Doubtly/backend/server.js
+// backend/server.js
 // Local development server entry point
 
 const app = require('./app');
