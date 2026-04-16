@@ -13,8 +13,12 @@ import {
   AlertTriangle,
   X,
   Baby,
+  LogIn,
+  User,
 } from 'lucide-react';
 import { useDoubt } from '../../context/DoubtContext';
+import { auth, googleProvider, signInWithPopup } from '../../firebase';
+import { onAuthStateChanged } from 'firebase/auth';
 import ImageUpload from '../../components/ImageUpload/ImageUpload';
 import ResponseArea from '../../components/ResponseArea/ResponseArea';
 import FollowUpChat from '../../components/FollowUpChat/FollowUpChat';
@@ -44,14 +48,29 @@ const SolverPage = () => {
   const [eli5Mode, setEli5Mode] = useState(false);
   const [category, setCategory] = useState('general');
   const [inputMode, setInputMode] = useState('text'); // 'text' | 'image'
+  const [user, setUser] = useState(null);
+  const [allowGuestSolve, setAllowGuestSolve] = useState(false);
+  const [showAuthPrompt, setShowAuthPrompt] = useState(false);
 
   const responseRef = useRef(null);
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+      setUser(currentUser);
+      if (currentUser) {
+        setAllowGuestSolve(false);
+        setShowAuthPrompt(false);
+      }
+    });
+
+    return () => unsubscribe();
+  }, []);
 
   const canSubmit = (inputMode === 'text' && questionText.trim().length >= 3) ||
     (inputMode === 'image' && selectedImage !== null) ||
     (questionText.trim().length >= 3 && selectedImage !== null);
 
-  const handleSolve = async () => {
+  const performSolve = async () => {
     if (!canSubmit || solving) return;
 
     try {
@@ -69,6 +88,38 @@ const SolverPage = () => {
     } catch {
       // Error is handled by context
     }
+  };
+
+  const handleSolve = async () => {
+    if (solving) return;
+
+    if (!user && !allowGuestSolve) {
+      setShowAuthPrompt(true);
+      return;
+    }
+
+    if (!canSubmit) {
+      alert("Please enter a question or upload an image first.");
+      return;
+    }
+
+    await performSolve();
+  };
+
+  const handleLoginAndSolve = async () => {
+    try {
+      await signInWithPopup(auth, googleProvider);
+      setShowAuthPrompt(false);
+      await performSolve();
+    } catch (loginError) {
+      console.error('Google sign-in error', loginError);
+    }
+  };
+
+  const handleContinueAsGuest = async () => {
+    setAllowGuestSolve(true);
+    setShowAuthPrompt(false);
+    await performSolve();
   };
 
   const handleNewDoubt = () => {
@@ -237,15 +288,68 @@ const SolverPage = () => {
           <motion.button
             className="btn btn-primary solver-page__solve-btn"
             onClick={handleSolve}
-            disabled={!canSubmit || solving}
-            whileHover={canSubmit && !solving ? { scale: 1.02 } : {}}
-            whileTap={canSubmit && !solving ? { scale: 0.98 } : {}}
+            disabled={solving}
+            whileHover={!solving ? { scale: 1.02 } : {}}
+            whileTap={!solving ? { scale: 0.98 } : {}}
             id="solve-btn"
           >
             <Zap size={20} />
             {solving ? 'Solving...' : 'Solve My Doubt'}
           </motion.button>
         </motion.div>
+
+        {/* ─── Login Or Guest Prompt ─────────────────────── */}
+        <AnimatePresence>
+          {showAuthPrompt && (
+            <motion.div
+              className="solver-page__auth-overlay"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+            >
+              <motion.div
+                className="solver-page__auth-modal glass-card"
+                initial={{ opacity: 0, y: 16, scale: 0.96 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                exit={{ opacity: 0, y: 12, scale: 0.98 }}
+                transition={{ duration: 0.2 }}
+              >
+                <h3 className="solver-page__auth-title">Continue to solve your doubt</h3>
+                <p className="solver-page__auth-subtitle">
+                  Login to save your progress and access history, or continue as guest.
+                </p>
+
+                <div className="solver-page__auth-actions">
+                  <button
+                    className="btn btn-primary solver-page__auth-btn"
+                    onClick={handleLoginAndSolve}
+                    type="button"
+                  >
+                    <LogIn size={16} />
+                    Login with Google
+                  </button>
+
+                  <button
+                    className="btn btn-secondary solver-page__auth-btn"
+                    onClick={handleContinueAsGuest}
+                    type="button"
+                  >
+                    <User size={16} />
+                    Continue as Guest
+                  </button>
+                </div>
+
+                <button
+                  className="solver-page__auth-close"
+                  onClick={() => setShowAuthPrompt(false)}
+                  type="button"
+                >
+                  Not now
+                </button>
+              </motion.div>
+            </motion.div>
+          )}
+        </AnimatePresence>
 
         {/* ─── Error Display ───────────────────────────────── */}
         <AnimatePresence>

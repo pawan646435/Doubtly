@@ -47,6 +47,66 @@
   gap: 2rem;
 }
 
+/* ─── Auth Prompt ────────────────────────── */
+.coding-auth-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 120;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  background: rgba(3, 7, 18, 0.72);
+  backdrop-filter: blur(6px);
+}
+
+.coding-auth-modal {
+  width: min(460px, 100%);
+  padding: 1.5rem;
+  border-radius: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+}
+
+.coding-auth-title {
+  margin: 0;
+  font-size: 1.25rem;
+  color: var(--text-primary);
+}
+
+.coding-auth-subtitle {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+
+.coding-auth-actions {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.6rem;
+  margin-top: 0.4rem;
+}
+
+.coding-auth-btn {
+  width: 100%;
+  justify-content: center;
+}
+
+.coding-auth-close {
+  margin-top: 0.1rem;
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  cursor: pointer;
+}
+
+.coding-auth-close:hover {
+  color: var(--text-secondary);
+}
+
 .coding-input-wrapper {
   background: #1e1e1e;
   border-radius: 12px;
@@ -349,5 +409,9 @@
 
   .coding-image-upload-btn {
     padding: 1rem;
+  }
+
+  .coding-auth-modal {
+    padding: 1.25rem;
   }
 }

@@ -105,7 +105,7 @@ const Navbar = () => {
           {user ? (
             <Link to="/dashboard" className="navbar__cta btn btn-primary" id="navbar-solve-btn" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
               <img src={user.photoURL} alt={user.displayName} style={{ width: '22px', height: '22px', borderRadius: '50%', objectFit: 'cover' }} />
-              Account
+              {user.displayName || 'Account'}
             </Link>
           ) : (
             <button onClick={handleLogin} className="navbar__cta btn btn-primary" id="navbar-login-btn">
@@ -152,7 +152,7 @@ const Navbar = () => {
             {user ? (
               <Link to="/dashboard" className="navbar__mobile-cta btn btn-primary" onClick={() => setMobileOpen(false)}>
                 <img src={user.photoURL} alt={user.displayName} style={{ width: '20px', height: '20px', borderRadius: '50%', objectFit: 'cover' }} />
-                Account
+                {user.displayName || 'Account'}
               </Link>
             ) : (
               <button

@@ -3,12 +3,14 @@
 
 import { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Image as ImageIcon, Upload, X, Code2 } from 'lucide-react';
+import { Image as ImageIcon, Upload, X, Code2, LogIn, User } from 'lucide-react';
+import { onAuthStateChanged } from 'firebase/auth';
 import ParticleBackground from '../../components/ParticleBackground/ParticleBackground';
 import LoadingSpinner from '../../components/LoadingSpinner/LoadingSpinner';
 import ResponseArea from '../../components/ResponseArea/ResponseArea';
 import FollowUpChat from '../../components/FollowUpChat/FollowUpChat';
 import { useDoubt } from '../../context/DoubtContext';
+import { auth, googleProvider, signInWithPopup } from '../../firebase';
 import './CodingSolverPage.css';
 
 const CodingSolverPage = () => {
@@ -17,6 +19,9 @@ const CodingSolverPage = () => {
   const [selectedImage, setSelectedImage] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
   const [localError, setLocalError] = useState('');
+  const [user, setUser] = useState(null);
+  const [allowGuestSolve, setAllowGuestSolve] = useState(false);
+  const [showAuthPrompt, setShowAuthPrompt] = useState(false);
 
   const textareaRef = useRef(null);
   const fileInputRef = useRef(null);
@@ -25,6 +30,18 @@ const CodingSolverPage = () => {
   useEffect(() => {
     clearCurrent();
   }, [clearCurrent]);
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+      setUser(currentUser);
+      if (currentUser) {
+        setAllowGuestSolve(false);
+        setShowAuthPrompt(false);
+      }
+    });
+
+    return () => unsubscribe();
+  }, []);
 
   const adjustTextareaHeight = (e) => {
     const el = e.target;
@@ -73,10 +90,7 @@ const CodingSolverPage = () => {
 
   const canSubmit = query.trim().length >= 3 || selectedImage !== null;
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (!canSubmit || solving) return;
-
+  const performSubmit = async () => {
     setLocalError('');
     clearError();
 
@@ -101,6 +115,39 @@ const CodingSolverPage = () => {
     } catch (err) {
       setLocalError(err.response?.data?.error || err.message || 'Failed to analyze code. Please check your logic and try again.');
     }
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (solving) return;
+
+    if (!user && !allowGuestSolve) {
+      setShowAuthPrompt(true);
+      return;
+    }
+
+    if (!canSubmit) {
+      setLocalError("Please enter a question or upload an image first.");
+      return;
+    }
+
+    await performSubmit();
+  };
+
+  const handleLoginAndSubmit = async () => {
+    try {
+      await signInWithPopup(auth, googleProvider);
+      setShowAuthPrompt(false);
+      await performSubmit();
+    } catch (loginError) {
+      console.error('Google sign-in error', loginError);
+    }
+  };
+
+  const handleContinueAsGuest = async () => {
+    setAllowGuestSolve(true);
+    setShowAuthPrompt(false);
+    await performSubmit();
   };
 
   const handleNewQuery = () => {
@@ -138,6 +185,58 @@ const CodingSolverPage = () => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.2 }}
         >
+          <AnimatePresence>
+            {showAuthPrompt && (
+              <motion.div
+                className="coding-auth-overlay"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+              >
+                <motion.div
+                  className="coding-auth-modal glass-card"
+                  initial={{ opacity: 0, y: 16, scale: 0.96 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  exit={{ opacity: 0, y: 12, scale: 0.98 }}
+                  transition={{ duration: 0.2 }}
+                >
+                  <h3 className="coding-auth-title">Continue to analyze your code</h3>
+                  <p className="coding-auth-subtitle">
+                    Login to save your progress and access history, or continue as guest.
+                  </p>
+
+                  <div className="coding-auth-actions">
+                    <button
+                      className="btn btn-primary coding-auth-btn"
+                      onClick={handleLoginAndSubmit}
+                      type="button"
+                    >
+                      <LogIn size={16} />
+                      Login with Google
+                    </button>
+
+                    <button
+                      className="btn btn-secondary coding-auth-btn"
+                      onClick={handleContinueAsGuest}
+                      type="button"
+                    >
+                      <User size={16} />
+                      Continue as Guest
+                    </button>
+                  </div>
+
+                  <button
+                    className="coding-auth-close"
+                    onClick={() => setShowAuthPrompt(false)}
+                    type="button"
+                  >
+                    Not now
+                  </button>
+                </motion.div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+
           <form className="query-box" onSubmit={handleSubmit}>
             <div className="coding-input-wrapper">
               <div className="editor-header">
@@ -215,7 +314,7 @@ const CodingSolverPage = () => {
               <button
                 type="submit"
                 className="coding-submit-btn"
-                disabled={solving || !canSubmit}
+                disabled={solving}
               >
                 {solving ? (
                   <span className="btn-content">
